@@ -1,0 +1,19 @@
+[package]
+name = "actix-web-middleware-requestid"
+version = "1.0.0"
+authors = ["Tim Tonkonogov <tim@tonko.me>"]
+edition = "2018"
+publish = ["git", "crates-io"]
+license = "MIT/Apache-2.0"
+description = "Request ID middleware for the actix-web framework v1.0+"
+homepage = "https://github.com/tonkonogov/actix-web-middleware-requestid"
+documentation = "https://docs.rs/actix-web-middleware-requestid"
+repository = "https://github.com/tonkonogov/actix-web-middleware-requestid"
+keywords = ["actix-web", "middleware", "requestid"]
+readme = "README.md"
+
+[dependencies]
+futures="0.1"
+actix-web = "1"
+actix-service = "0.4.2"
+rand = "0.7"
