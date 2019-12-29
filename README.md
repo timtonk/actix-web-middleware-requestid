@@ -4,7 +4,9 @@
 [![Documentation](https://docs.rs/actix-web-middleware-requestid/badge.svg)](https://docs.rs/actix-web-middleware-requestid)
 [![License](https://img.shields.io/crates/l/actix-web-middleware-requestid.svg)](https://github.com/tonkonogov/actix-web-middleware-requestid#license)
 
-Request ID middleware for the actix-web framework v1.x
+Request ID middleware for the actix-web framework v2.0+
+
+Adds a custom header with a unique token to every request. Also includes a handy actix-web compliant extractor for requests.
 
 # Usage
 
@@ -12,7 +14,7 @@ Add the package to Cargo.toml:
 
 ```toml
 [dependencies]
-actix-web-middleware-requestid = "1.0"
+actix-web-middleware-requestid = "2.0"
 ```
 
 Import and add middleware to your server definition:
@@ -22,10 +24,24 @@ use actix_web_middleware_requestid::RequestIDWrapper;
 
 ...
 
-App::new()
+fn main() -> std::io::Result<()> {
+    App::new()
+        ...
+        .wrap(RequestIDWrapper)
+        ...
+}
+
+...
+
+async fn index(id: RequestID) -> HttpResponse {
+    log::info!("id: {}", id.0);
+
     ...
-    .wrap(RequestIDWrapper)
+}
+
 ```
+
+For actix-web v1.x use version "1.0" of the same package. The usage pattern and all exported names remain the same.
 
 # Minimal example
 

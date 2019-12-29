@@ -1,6 +1,6 @@
 //! # actix-web-middleware-requestid
 //!
-//! Request ID middleware for the actix-web framework v1.x. Adds a custom header with a unique token to every request.
+//! Request ID middleware for the actix-web framework v2.0+. Adds a custom header with a unique token to every request.
 //!
 //! # Usage
 //!
@@ -8,7 +8,7 @@
 //!
 //! ```toml
 //! [dependencies]
-//! actix-web-middleware-requestid = "1.0"
+//! actix-web-middleware-requestid = "2.0"
 //! ```
 //!
 //! Import and add middleware to your server definition:
@@ -23,17 +23,7 @@
 //!     .wrap(RequestID)
 //! ```
 //!
-//! # Minimal example
-//!
-//! ```rust
-//! use actix_web_middleware_requestid::{RequestID, RequestIDWrapper};
-//!
-//! ...
-//!
-//! App::new()
-//!     ...
-//!     .wrap(RequestID)
-//! ```
+//! For actix-web v1.x use version "1.0" of the same package. The usage pattern and all exported names remain the same.
 //!
 //! # For actix-web < 1.0
 //!
@@ -46,8 +36,8 @@ use actix_web::http::header::{HeaderName, HeaderValue};
 use actix_web::Result;
 use actix_web::{dev, Error, FromRequest, HttpMessage, HttpRequest};
 use actix_web::{dev::ServiceRequest, dev::ServiceResponse};
-use futures::future::{ok, FutureResult};
-use futures::{Future, Poll};
+use futures::future::{err, ok, Ready};
+use std::task::{Context, Poll};
 
 /// The header set by the middleware
 pub const REQUEST_ID_HEADER: &str = "x-request-id";
@@ -66,7 +56,7 @@ where
     type Error = Error;
     type InitError = ();
     type Transform = RequestIDMiddleware<S>;
-    type Future = FutureResult<Self::Transform, Self::InitError>;
+    type Future = Ready<Result<Self::Transform, Self::InitError>>;
 
     fn new_transform(&self, service: S) -> Self::Future {
         ok(RequestIDMiddleware { service })
@@ -87,10 +77,10 @@ where
     type Request = ServiceRequest;
     type Response = ServiceResponse<B>;
     type Error = Error;
-    type Future = Box<dyn Future<Item = Self::Response, Error = Self::Error>>;
+    type Future = S::Future;
 
-    fn poll_ready(&mut self) -> Poll<(), Self::Error> {
-        self.service.poll_ready()
+    fn poll_ready(&mut self, cx: &mut Context<'_>) -> Poll<Result<(), Self::Error>> {
+        self.service.poll_ready(cx)
     }
 
     fn call(&mut self, req: ServiceRequest) -> Self::Future {
@@ -112,7 +102,7 @@ where
         req.extensions_mut().insert(RequestID(request_id));
 
         // propagate the call
-        Box::new(self.service.call(req))
+        self.service.call(req)
     }
 }
 
@@ -121,14 +111,14 @@ pub struct RequestID(pub String);
 
 impl FromRequest for RequestID {
     type Error = Error;
-    type Future = Result<Self, Self::Error>;
+    type Future = Ready<Result<Self, Self::Error>>;
     type Config = ();
 
     fn from_request(req: &HttpRequest, _payload: &mut dev::Payload) -> Self::Future {
         if let Some(RequestID(req_id)) = req.extensions().get::<RequestID>() {
-            Ok(RequestID(req_id.clone()))
+            ok(RequestID(req_id.clone()))
         } else {
-            Err(ErrorBadRequest("request id is missing"))
+            err(ErrorBadRequest("request id is missing"))
         }
     }
 }
