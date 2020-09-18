@@ -1,6 +1,6 @@
 //! # actix-web-middleware-requestid
 //!
-//! Request ID middleware for the actix-web framework v2.0+. Adds a custom header with a unique token to every request.
+//! Request ID middleware for the actix-web framework v3.0+. Adds a custom header with a unique token to every request.
 //!
 //! # Usage
 //!
@@ -8,7 +8,7 @@
 //!
 //! ```toml
 //! [dependencies]
-//! actix-web-middleware-requestid = "2.0"
+//! actix-web-middleware-requestid = "3.0"
 //! ```
 //!
 //! Import and add middleware to your server definition:
@@ -30,6 +30,8 @@
 //! Consider using a similar crate [actix-web-requestid](https://crates.io/crates/actix-web-requestid)
 //!
 
+use std::task::{Context, Poll};
+
 use actix_service::{Service, Transform};
 use actix_web::error::ErrorBadRequest;
 use actix_web::http::header::{HeaderName, HeaderValue};
@@ -37,7 +39,6 @@ use actix_web::Result;
 use actix_web::{dev, Error, FromRequest, HttpMessage, HttpRequest};
 use actix_web::{dev::ServiceRequest, dev::ServiceResponse};
 use futures::future::{err, ok, Ready};
-use std::task::{Context, Poll};
 
 /// The header set by the middleware
 pub const REQUEST_ID_HEADER: &str = "x-request-id";

@@ -4,7 +4,7 @@
 [![Documentation](https://docs.rs/actix-web-middleware-requestid/badge.svg)](https://docs.rs/actix-web-middleware-requestid)
 [![License](https://img.shields.io/crates/l/actix-web-middleware-requestid.svg)](https://github.com/tonkonogov/actix-web-middleware-requestid#license)
 
-Request ID middleware for the actix-web framework v2.0+
+Request ID middleware for the actix-web framework v3.0+
 
 Adds a custom header with a unique token to every request. Also includes a handy actix-web compliant extractor for requests.
 
@@ -14,7 +14,7 @@ Add the package to Cargo.toml:
 
 ```toml
 [dependencies]
-actix-web-middleware-requestid = "2.0"
+actix-web-middleware-requestid = "3.0"
 ```
 
 Import and add middleware to your server definition:

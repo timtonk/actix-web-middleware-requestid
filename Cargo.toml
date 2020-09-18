@@ -1,6 +1,6 @@
 [package]
 name = "actix-web-middleware-requestid"
-version = "2.0.0"
+version = "3.0.0"
 authors = ["Tim Tonkonogov <tim@tonko.me>"]
 edition = "2018"
 publish = ["git", "crates-io"]
@@ -14,6 +14,6 @@ readme = "README.md"
 
 [dependencies]
 futures="0.3"
-actix-web = "2"
+actix-web = "3"
 actix-service = "1.0"
 rand = "0.7"
